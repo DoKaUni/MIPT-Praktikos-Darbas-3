@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace = "com.example.miptpraktikosdarbas3"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.miptpraktikosdarbas3"
         minSdk = 22
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 

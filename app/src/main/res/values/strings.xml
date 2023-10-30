@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">MIPTPraktikosDarbas3</string>
+    <string name="buttonMC">MC</string>
+    <string name="buttonMR">MR</string>
+    <string name="buttonMS">MS</string>
+    <string name="buttonMPLUS">M+</string>
+    <string name="buttonMMINUS">M-</string>
+    <string name="buttonCE">CE</string>
+    <string name="buttonC">C</string>
+    <string name="buttonDivision">/</string>
+    <string name="buttonPercentage">%</string>
+    <string name="buttonMultiplication">*</string>
+    <string name="buttonFraction">1/x</string>
+    <string name="buttonAddition">+</string>
+    <string name="buttonSubtraction">-</string>
+    <string name="buttonEquals">=</string>
+    <string name="buttonDecimalPoint">.</string>
+    <string name="button1">1</string>
+    <string name="button2">2</string>
+    <string name="button3">3</string>
+    <string name="button4">4</string>
+    <string name="button5">5</string>
+    <string name="button6">6</string>
+    <string name="button7">7</string>
+    <string name="button8">8</string>
+    <string name="button9">9</string>
+    <string name="button0">0</string>
 </resources>
