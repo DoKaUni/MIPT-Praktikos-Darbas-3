@@ -7,6 +7,8 @@
     <string name="buttonMMINUS">M-</string>
     <string name="buttonCE">CE</string>
     <string name="buttonC">C</string>
+    <string name="buttonPlusMinus">±</string>
+    <string name="buttonSquareRoot">√</string>
     <string name="buttonDivision">/</string>
     <string name="buttonPercentage">%</string>
     <string name="buttonMultiplication">*</string>
