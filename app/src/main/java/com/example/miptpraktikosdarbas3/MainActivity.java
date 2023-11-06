@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.Toast;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
@@ -63,6 +64,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button.setOnClickListener(this);
     }
 
+    void showToastNotification(String string){
+        Toast toast = Toast.makeText(this, string, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
     @Override
     public void onClick(View view) {
         Button button = (Button) view;
@@ -74,8 +80,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else if(buttonText.equals("MR"))
             calcDataString = String.valueOf(memoryResult);
         else if(buttonText.equals("MS") || buttonText.equals("M+") || buttonText.equals("M-")){
-            if(!MathUtils.isLastCharDigit(calcDataString))
+            if(!MathUtils.isLastCharDigit(calcDataString)) {
+                showToastNotification("Cannot use non-digit");
                 return;
+            }
 
             String digitSection = MathUtils.copyDigitSection(calcDataString);
             switch(buttonText) {
@@ -118,8 +126,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }else if(buttonText.equals("√") || buttonText.equals("%") || buttonText.equals("1/x")) {
             if(calcDataString.isEmpty())
                 return;
-            if(!MathUtils.isLastCharDigit(calcDataString))
+            if(!MathUtils.isLastCharDigit(calcDataString)) {
+                showToastNotification("Cannot use non-digit");
                 return;
+            }
 
             String digitSection;
             int lastWhitespaceIndex = calcDataString.lastIndexOf(' ');
@@ -150,10 +160,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             calcDataString += result;
         }else if(buttonText.equals("/") || buttonText.equals("*") || buttonText.equals("+") || buttonText.equals("-")) {
-            if(calcDataString.isEmpty())
+            if(calcDataString.isEmpty()) {
+                showToastNotification("No operation digit");
                 return;
-            if(MathUtils.unfinishedOperationExists(calcDataString))
+            }
+            if(MathUtils.unfinishedOperationExists(calcDataString)) {
+                showToastNotification("Cannot add another operation");
                 return;
+            }
 
             calcDataString += " " + buttonText + " ";
         }else if(buttonText.equals(".")) {
@@ -162,13 +176,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             String digitSection = MathUtils.copyDigitSection(calcDataString);
 
-            if (digitSection.contains("."))
+            if (digitSection.contains(".")) {
+                showToastNotification("Cannot add multiple decimal points");
                 return;
+            }
 
             calcDataString += buttonText;
         }else if(buttonText.equals("=")) {
-            if(MathUtils.unfinishedOperationExists(calcDataString))
+            if(MathUtils.unfinishedOperationExists(calcDataString)) {
+                showToastNotification("Unfinished operation exists");
                 return;
+            }
 
             Expression expression = new ExpressionBuilder(calcDataString).build();
             calcDataString = Double.toString(expression.evaluate());
