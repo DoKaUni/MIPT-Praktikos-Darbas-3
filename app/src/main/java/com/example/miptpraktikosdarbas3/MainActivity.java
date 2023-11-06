@@ -2,7 +2,6 @@ package com.example.miptpraktikosdarbas3;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
@@ -55,19 +54,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         assignButtonId(buttonN8, R.id.n8);
         assignButtonId(buttonN9, R.id.n9);
         assignButtonId(buttonN0, R.id.n0);
-
-        String expressionString = "2 + 3 * 1/4"; // Example expression
-
-        try {
-            Expression expression = new ExpressionBuilder(expressionString)
-                    .build();
-
-            double result = expression.evaluate();
-
-            Log.d("Calculation Result", String.valueOf(result));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     void assignButtonId(Button button, int id){
@@ -75,12 +61,129 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button.setOnClickListener(this);
     }
 
+    String removeChar(String string, int index){
+        StringBuilder stringBuilder = new StringBuilder(string);
+        stringBuilder.deleteCharAt(index);
+
+        return stringBuilder.toString();
+    }
+
+    String addChar(String string, char character, int index){
+        StringBuilder stringBuilder = new StringBuilder(string);
+        stringBuilder.insert(index, character);
+
+        return stringBuilder.toString();
+    }
+
+    boolean unfinishedOperationExists(String string){
+        if(string.length() < 2)
+            return false;
+
+        char operationChar = string.charAt(string.length() - 2);
+        return operationChar == '/' || operationChar == '*' || operationChar == '+' || operationChar == '-';
+    }
+
+    boolean isLastCharDigit(String string){
+        if(string.isEmpty())
+            return false;
+
+        return Character.isDigit(string.charAt(string.length() - 1));
+    }
+
     @Override
     public void onClick(View view) {
         Button button = (Button) view;
         String buttonText = button.getText().toString();
         String calcDataString = calculatorText.getText().toString();
-        calcDataString += buttonText;
+
+        if(button.equals(findViewById((R.id.back)))) {
+            if (calcDataString.isEmpty())
+                return;
+
+            calcDataString = calcDataString.trim();
+            calcDataString = calcDataString.substring(0, calcDataString.length() - 1);
+        } else if(buttonText.equals("CE")){
+            if(calcDataString.isEmpty())
+                return;
+
+            int lastSpaceIndex = calcDataString.lastIndexOf(' ');
+            calcDataString = calcDataString.substring(0, lastSpaceIndex + 1);
+        } else if(buttonText.equals("C"))
+            calcDataString = "";
+        else if(button.equals(findViewById(R.id.plusMinus))) {
+            if(calcDataString.isEmpty())
+                return;
+
+            int lastSpaceIndex = calcDataString.lastIndexOf(' ');
+            if(calcDataString.charAt(lastSpaceIndex + 1) == '-')
+                calcDataString = removeChar(calcDataString, lastSpaceIndex + 1);
+            else
+                calcDataString = addChar(calcDataString, '-', lastSpaceIndex + 1);
+        }else if(buttonText.equals("√") || buttonText.equals("%") || buttonText.equals("1/x")) {
+            if(calcDataString.isEmpty())
+                return;
+            if(!isLastCharDigit(calcDataString))
+                return;
+
+            String digitSection;
+            int lastWhitespaceIndex = calcDataString.lastIndexOf(' ');
+
+            if(lastWhitespaceIndex != -1){
+                digitSection = calcDataString.substring(lastWhitespaceIndex + 1);
+                calcDataString = calcDataString.substring(0, lastWhitespaceIndex + 1);
+            } else {
+                digitSection = calcDataString;
+                calcDataString = "";
+            }
+
+            double result = Double.parseDouble(digitSection);
+            switch(buttonText) {
+                case "√":
+                    result = Math.sqrt(result);
+
+                    break;
+                case "%":
+                    result = result / 100;
+
+                    break;
+                case "1/x":
+                    result = 1 / result;
+
+                    break;
+            }
+
+            calcDataString += result;
+        }else if(buttonText.equals("/") || buttonText.equals("*") || buttonText.equals("+") || buttonText.equals("-")) {
+            if(calcDataString.isEmpty())
+                return;
+            if(unfinishedOperationExists(calcDataString))
+                return;
+
+            calcDataString += " " + buttonText + " ";
+        }else if(buttonText.equals(".")) {
+            if(!isLastCharDigit(calcDataString))
+                calcDataString += 0;
+
+            int lastWhitespaceIndex = calcDataString.lastIndexOf(' ');
+            String digitSection;
+
+            if(lastWhitespaceIndex == -1)
+                digitSection = calcDataString;
+            else
+                digitSection = calcDataString.substring(lastWhitespaceIndex + 1);
+
+            if (digitSection.contains("."))
+                return;
+
+            calcDataString += buttonText;
+        }else if(buttonText.equals("=")) {
+            if(unfinishedOperationExists(calcDataString))
+                return;
+
+            Expression expression = new ExpressionBuilder(calcDataString).build();
+            calcDataString = Double.toString(expression.evaluate());
+        }else
+            calcDataString += buttonText;
 
         calculatorText.setText(calcDataString);
     }
