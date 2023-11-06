@@ -8,6 +8,8 @@ import android.widget.Button;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
+import Utils.MathUtils;
+
 import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -61,44 +63,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button.setOnClickListener(this);
     }
 
-    String removeChar(String string, int index){
-        StringBuilder stringBuilder = new StringBuilder(string);
-        stringBuilder.deleteCharAt(index);
-
-        return stringBuilder.toString();
-    }
-
-    String addChar(String string, char character, int index){
-        StringBuilder stringBuilder = new StringBuilder(string);
-        stringBuilder.insert(index, character);
-
-        return stringBuilder.toString();
-    }
-
-    boolean unfinishedOperationExists(String string){
-        if(string.length() < 2)
-            return false;
-
-        char operationChar = string.charAt(string.length() - 2);
-        return operationChar == '/' || operationChar == '*' || operationChar == '+' || operationChar == '-';
-    }
-
-    boolean isLastCharDigit(String string){
-        if(string.isEmpty())
-            return false;
-
-        return Character.isDigit(string.charAt(string.length() - 1));
-    }
-
-    String copyDigitSection(String string){
-        int lastWhitespaceIndex = string.lastIndexOf(' ');
-
-        if(lastWhitespaceIndex == -1)
-            return string;
-        else
-            return string.substring(lastWhitespaceIndex + 1);
-    }
-
     @Override
     public void onClick(View view) {
         Button button = (Button) view;
@@ -110,10 +74,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else if(buttonText.equals("MR"))
             calcDataString = String.valueOf(memoryResult);
         else if(buttonText.equals("MS") || buttonText.equals("M+") || buttonText.equals("M-")){
-            if(!isLastCharDigit(calcDataString))
+            if(!MathUtils.isLastCharDigit(calcDataString))
                 return;
 
-            String digitSection = copyDigitSection(calcDataString);
+            String digitSection = MathUtils.copyDigitSection(calcDataString);
             switch(buttonText) {
                 case "MS":
                     memoryResult = Double.parseDouble(digitSection);
@@ -148,13 +112,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             int lastSpaceIndex = calcDataString.lastIndexOf(' ');
             if(calcDataString.charAt(lastSpaceIndex + 1) == '-')
-                calcDataString = removeChar(calcDataString, lastSpaceIndex + 1);
+                calcDataString = MathUtils.removeChar(calcDataString, lastSpaceIndex + 1);
             else
-                calcDataString = addChar(calcDataString, '-', lastSpaceIndex + 1);
+                calcDataString = MathUtils.addChar(calcDataString, '-', lastSpaceIndex + 1);
         }else if(buttonText.equals("√") || buttonText.equals("%") || buttonText.equals("1/x")) {
             if(calcDataString.isEmpty())
                 return;
-            if(!isLastCharDigit(calcDataString))
+            if(!MathUtils.isLastCharDigit(calcDataString))
                 return;
 
             String digitSection;
@@ -188,22 +152,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }else if(buttonText.equals("/") || buttonText.equals("*") || buttonText.equals("+") || buttonText.equals("-")) {
             if(calcDataString.isEmpty())
                 return;
-            if(unfinishedOperationExists(calcDataString))
+            if(MathUtils.unfinishedOperationExists(calcDataString))
                 return;
 
             calcDataString += " " + buttonText + " ";
         }else if(buttonText.equals(".")) {
-            if(!isLastCharDigit(calcDataString))
+            if(!MathUtils.isLastCharDigit(calcDataString))
                 calcDataString += 0;
 
-            String digitSection = copyDigitSection(calcDataString);
+            String digitSection = MathUtils.copyDigitSection(calcDataString);
 
             if (digitSection.contains("."))
                 return;
 
             calcDataString += buttonText;
         }else if(buttonText.equals("=")) {
-            if(unfinishedOperationExists(calcDataString))
+            if(MathUtils.unfinishedOperationExists(calcDataString))
                 return;
 
             Expression expression = new ExpressionBuilder(calcDataString).build();
