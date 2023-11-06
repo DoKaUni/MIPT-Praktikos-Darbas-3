@@ -11,7 +11,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    double memoryResult;
+    double memoryResult = 0;
     TextView calculatorText;
     Button buttonMC, buttonMR, buttonMS, buttonMPlus, buttonMMinus,
             buttonBack, buttonCE, buttonC, buttonPlusMinus, buttonSquareRoot,
@@ -90,13 +90,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return Character.isDigit(string.charAt(string.length() - 1));
     }
 
+    String copyDigitSection(String string){
+        int lastWhitespaceIndex = string.lastIndexOf(' ');
+
+        if(lastWhitespaceIndex == -1)
+            return string;
+        else
+            return string.substring(lastWhitespaceIndex + 1);
+    }
+
     @Override
     public void onClick(View view) {
         Button button = (Button) view;
         String buttonText = button.getText().toString();
         String calcDataString = calculatorText.getText().toString();
 
-        if(button.equals(findViewById((R.id.back)))) {
+        if(buttonText.equals("MC"))
+            memoryResult = 0;
+        else if(buttonText.equals("MR"))
+            calcDataString = String.valueOf(memoryResult);
+        else if(buttonText.equals("MS") || buttonText.equals("M+") || buttonText.equals("M-")){
+            if(!isLastCharDigit(calcDataString))
+                return;
+
+            String digitSection = copyDigitSection(calcDataString);
+            switch(buttonText) {
+                case "MS":
+                    memoryResult = Double.parseDouble(digitSection);
+
+                    break;
+                case "M+":
+                    memoryResult += Double.parseDouble(digitSection);
+
+                    break;
+                case "M-":
+                    memoryResult -= Double.parseDouble(digitSection);
+
+                    break;
+            }
+        }else if(button.equals(findViewById((R.id.back)))) {
             if (calcDataString.isEmpty())
                 return;
 
@@ -164,13 +196,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(!isLastCharDigit(calcDataString))
                 calcDataString += 0;
 
-            int lastWhitespaceIndex = calcDataString.lastIndexOf(' ');
-            String digitSection;
-
-            if(lastWhitespaceIndex == -1)
-                digitSection = calcDataString;
-            else
-                digitSection = calcDataString.substring(lastWhitespaceIndex + 1);
+            String digitSection = copyDigitSection(calcDataString);
 
             if (digitSection.contains("."))
                 return;
